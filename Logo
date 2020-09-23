@@ -1,0 +1,81 @@
+var Text = function(txt,x,y,ts,col,col2,s) {
+    textSize(ts);
+    for (var i = s; i > 0; i --) {//glow strength
+        for (var e = 0; e < 360; e +=30) {
+            pushMatrix();
+            translate(x+cos(e)*i,y+sin(e)*i);
+            fill(col,i*30);
+            text(txt,0,0);
+            popMatrix();
+        }
+    }
+    fill(col2);
+    text(txt,x,y);
+};
+var coin = function(x,y,r,s) {
+    pushMatrix();
+    translate(x,y);
+    scale(s);
+    rotate(r);
+    strokeWeight(2);
+    stroke(229, 130, 8);
+    fill(255, 240, 5);
+    ellipse(0,0,40,40);
+    fill(255, 205, 0);
+    ellipse(0,0,30,30);
+    textAlign(CENTER,CENTER);
+    textFont(createFont("Arial Black"));
+    Text("$",0,0,25,color(229, 130, 8),color(255, 240, 5),2);
+    popMatrix();
+};
+
+var Logo = function() {
+    this.x = width+100;
+    this.x2 = width+100;
+    this.y = height/2;
+    this.r = 0;
+    this.s = 5;
+    this.t = 0;
+    this.b = 0;
+};
+Logo.prototype.draw = function() {
+    noStroke();
+    for (var i = 0; i < width; i += width/20) {
+        for (var e = 0; e < height; e += height/20) {
+            if (sin((frameCount+(i*e))*10)*6 <= 3) {
+                continue;
+            }
+            fill(0, 0, 0, sin((frameCount+(i*e))*10)*6);
+            rect(i,e,width/20,height/20);
+        }
+    }
+    textFont(createFont("Segoe Print"));
+    Text("Coin",this.x2,this.y,60,color(0, 0, 0),color(255, 240, 5),3);
+    coin(this.x,this.y,this.r,this.s);
+    fill(0, 0, 0, this.b);
+    rect(0,0,width,height);
+};
+Logo.prototype.move = function() {
+    this.t++;
+    if (this.t < 100) {
+        this.x = lerp(this.x,width/2,0.05);
+        this.r = lerp(this.r,-360,0.05);
+    } else if (this.t > 120 && this.t < 240) {
+        this.x = lerp(this.x,width/(6-(width/200)),0.05);
+        this.x2 = lerp(this.x2,width/3*2,0.05);
+        this.s = lerp(this.s,4,0.05);
+        this.r = lerp(this.r,-360,0.05);
+    } else if (this.t > 240) {
+        this.x = lerp(this.x,width/2,0.05);
+        this.r = lerp(this.r,36000,0.05);
+        this.s = lerp(this.s,20,0.05);
+        this.b +=3;
+    }
+};
+var logo = new Logo();
+
+draw = function() {
+    background(255, 205, 0);
+    logo.draw();
+    logo.move();
+};
